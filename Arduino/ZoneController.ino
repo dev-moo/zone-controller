@@ -263,15 +263,23 @@ void loop () {
 
     //Probe Zone Controller for current status
     if (input == GET) {
-
+      
+      digitalWrite(LED, HIGH);
+      
       if (!ProbeZoneContoller()) {
         Serial.println("FAILED");
       }
+      
+      digitalWrite(LED, LOW);
 
       //Control Zones
     } else if (input == SET) {
-      //Serial.print(Serial.available());
+      
+      digitalWrite(LED, HIGH);
+      
       ReceiveCommand();
+      
+      digitalWrite(LED, LOW);
 
       //Check this service is alive
     } else if (input == CHECK) {
