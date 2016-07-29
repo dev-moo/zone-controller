@@ -57,8 +57,6 @@ void switchPressed () {
 }
 
 
-
-
 //Get individual 'packets' sent on zone controller serial link
 boolean GetPacket(byte *buf, int maxrecursions) {
 
