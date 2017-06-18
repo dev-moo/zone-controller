@@ -36,11 +36,7 @@ CONFIG = get_config.get_config(CONFIG_FILE_NAME)
 
 LOGFILE = CONFIG.get('General', 'logfile')
 SERVER_IP = CONFIG.get('General', 'serverIP')
-<<<<<<< HEAD
-SERVER_PORT = CONFIG.get('General', 'serverPort')
-=======
 SERVER_PORT = int(CONFIG.get('General', 'serverPort'))
->>>>>>> refs/remotes/origin/master
 ARDUINO_ADDRESS = CONFIG.get('General', 'arduinoAddress')
 
 
@@ -278,41 +274,6 @@ def set_settings(cmd):
 
 
 
-		
-def check_serial():
-    
-<<<<<<< HEAD
-	"""Check Arduino is responsive"""
-	
-	USB.flush()
-    USB.write(ZC_CMD_CHECK)
-    
-	sleep(1)
-=======
-    """Check Arduino is responsive"""
-	
-    USB.flush()
-    USB.write(ZC_CMD_CHECK)
-    
-    sleep(1)
->>>>>>> refs/remotes/origin/master
-
-    #Read in response
-    usb_data = USB.readline()
-	
-<<<<<<< HEAD
-	if usb_data == ZC_ALIVE_RESPONSE:
-		return True
-		
-	return False
-=======
-    if usb_data == ZC_ALIVE_RESPONSE:
-        return True
-		
-    return False
->>>>>>> refs/remotes/origin/master
-
-
 def read_usb():
 
     """Read data on USB serial"""
@@ -325,7 +286,30 @@ def read_usb():
         button_press_function.button_pressed()
 
 
+        
+def check_serial(arduino):
+    
+    """Check Arduino is responsive"""
+    
+    arduino.flush()
+    arduino.write(ZC_CMD_CHECK)
+    
+    sleep(1)
 
+    #Read in response
+    usb_data = arduino.readline()
+    usb_data = usb_data.strip('\r''\n')
+    
+    if usb_data == ZC_ALIVE_RESPONSE:
+        dbg("Serial check passed")
+        return True
+    
+    dbg("Serial check failed")
+    
+    return False
+
+    
+    
 def setup_udp_socket(s_ip, s_port):
 
     """Create UDP socket to communicate on the network"""
@@ -351,27 +335,38 @@ def setup_udp_socket(s_ip, s_port):
 
 def connect_arduino(address):
     
-	"""Create usb serial connection to Arduino"""
-	
-	arduino = False
-	
-	#Serial connection to Arduino (zone controller)
-	for x in range(0, 10):
-		try:
-			arduino = serial.Serial(address, 9600, timeout=1)
-		except SerialException:
-			logging.exception("Exception Occurred:")
-			log_event('Error connecting to Arduino')
-			sleep(5)
-			
-	if not arduino:
-		logging.exception("Unable to connect to Arduino")
-		log_event('Unable to connect to Arduino, stopping service')
-		exit()
-		
-	return arduino
-	
-	
+    """Create usb serial connection to Arduino"""
+    
+    arduino = False
+    
+    logging.info("Connecting to Arduino")
+    
+    #Serial connection to Arduino (zone controller)
+    for x in xrange(6):
+        try:
+            arduino = serial.Serial(address, 9600, timeout=1)
+            if check_serial(arduino):
+                break
+        except serial.SerialException:
+            logging.exception("Exception Occurred:")
+            log_event('Error connecting to Arduino')
+            sleep(5)
+            
+    if not arduino:
+        logging.exception("Unable to connect to Arduino")
+        log_event('Unable to connect to Arduino, stopping service')
+        exit()
+    
+    if not check_serial(arduino):
+        logging.warning("Arduino is connected but not responding")
+        log_event('Arduino is connected but not responding, stopping service')
+        exit()    
+        
+    logging.info("Arduino is connected")
+        
+    return arduino
+    
+    
 log_event("Starting Zone-Controller service")
 
 SOCK = setup_udp_socket(SERVER_IP, SERVER_PORT)
@@ -388,7 +383,7 @@ try:
     while inputs:
 
         # Wait for at least one of the sockets to be ready for processing
-        readable, writable, exceptional = select.select(inputs, [], inputs, 60)
+        readable, writable, exceptional = select.select(inputs, [], inputs)
 
         # Handle inputs
         for s in readable:
@@ -437,18 +432,17 @@ try:
             elif s is USB:
                 try:
                     read_usb()
-                except SerialException:
+                except serial.SerialException:
                     logging.exception("Exception Occurred:")
                     log_event("Serial Exception Occured")
-<<<<<<< HEAD
-					USB = connect_arduino(ARDUINO_ADDRESS)
-=======
+                    if USB in inputs: inputs.remove(USB)
                     USB = connect_arduino(ARDUINO_ADDRESS)
->>>>>>> refs/remotes/origin/master
+                    inputs.append(USB)
 
-		
-		if not check_serial():
-			USB = connect_arduino(ARDUINO_ADDRESS)
-		
+        
+        if not check_serial(USB):
+            pass
+            #USB = connect_arduino(ARDUINO_ADDRESS)
+        
 except:
     logging.exception("Fail:")
