@@ -26,7 +26,11 @@ def get_config(config_file_name):
     try:
 
         this_dir = os.path.dirname(os.path.abspath(__file__))
+<<<<<<< HEAD
         filepath = this_dir + '\\' + config_file_name
+=======
+        filepath = this_dir + '/' + config_file_name
+>>>>>>> refs/remotes/origin/master
 
         print filepath
 

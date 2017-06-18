@@ -36,7 +36,11 @@ CONFIG = get_config.get_config(CONFIG_FILE_NAME)
 
 LOGFILE = CONFIG.get('General', 'logfile')
 SERVER_IP = CONFIG.get('General', 'serverIP')
+<<<<<<< HEAD
 SERVER_PORT = CONFIG.get('General', 'serverPort')
+=======
+SERVER_PORT = int(CONFIG.get('General', 'serverPort'))
+>>>>>>> refs/remotes/origin/master
 ARDUINO_ADDRESS = CONFIG.get('General', 'arduinoAddress')
 
 
@@ -277,20 +281,36 @@ def set_settings(cmd):
 		
 def check_serial():
     
+<<<<<<< HEAD
 	"""Check Arduino is responsive"""
 	
 	USB.flush()
     USB.write(ZC_CMD_CHECK)
     
 	sleep(1)
+=======
+    """Check Arduino is responsive"""
+	
+    USB.flush()
+    USB.write(ZC_CMD_CHECK)
+    
+    sleep(1)
+>>>>>>> refs/remotes/origin/master
 
     #Read in response
     usb_data = USB.readline()
 	
+<<<<<<< HEAD
 	if usb_data == ZC_ALIVE_RESPONSE:
 		return True
 		
 	return False
+=======
+    if usb_data == ZC_ALIVE_RESPONSE:
+        return True
+		
+    return False
+>>>>>>> refs/remotes/origin/master
 
 
 def read_usb():
@@ -420,7 +440,11 @@ try:
                 except SerialException:
                     logging.exception("Exception Occurred:")
                     log_event("Serial Exception Occured")
+<<<<<<< HEAD
 					USB = connect_arduino(ARDUINO_ADDRESS)
+=======
+                    USB = connect_arduino(ARDUINO_ADDRESS)
+>>>>>>> refs/remotes/origin/master
 
 		
 		if not check_serial():
