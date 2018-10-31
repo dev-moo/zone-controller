@@ -1,0 +1,18 @@
+
+
+Goal of project:
+
+Project to build a UDP Interface for a Connect Air RMC03 A/C zone controller so the Zone controller can be operated remotely via web browser on computer or mobile device.
+Build a web front end to interact with UDP interface
+
+Front end is optimised for use on mobile device.
+
+Solution:
+
+Physically connect an Arduino Uno to the wall mounted controller of the Connect Air RMC03, the Arduino will act as a USB interface to the RMC03
+The Arduino is suitable for this task because it runs on 5V, the same voltage as the RMC03 and can have pins configured as a serial input to read the communications between the wall controller and the main unit.
+Connect the Arduino to a Raspberry PI via a USB cable, this both powers the Arduino and works as a serial link.
+
+The Raspberry PI will run a Python service which acts as a UDP network interface to the Arduino.
+
+Front end is a combination of JQuery, HTML and PHP.
