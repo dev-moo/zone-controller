@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+<head>
+    <title>Testing</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    
+    <style type="text/css">
+    
+        input.ui-slider-input {display: none;}
+        
+        .ui-slider .ui-slider-track {
+            height: 15px;
+            top: 0%;
+        }
+        
+        .loader {
+            border: 5px solid #f3f3f3; /* Light grey */
+            border-top: 5px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .blueCircle {
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            background: #3498db;
+        }        
+        
+        .redCircle {
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            background: red;
+        }  
+        
+        
+    </style>
+    
+</head>
+<body>
+    
+    <script>
+    
+        function get_status(){
+            
+            status_loading();
+
+            $.ajax({
+                url: 'php/zonecontroller.php',
+                dataType: 'json',
+                success: function (data) {    
+                    
+                    $("#z1").val(data.z1);
+                    $("#z1").slider('refresh');
+                    $("#z2").val(data.z2);
+                    $("#z2").slider('refresh');
+                    $("#z3").val(data.z3);
+                    $("#z3").slider('refresh');
+                    $("#z4").val(data.z4);
+                    $("#z4").slider('refresh');
+                    $("#z5").val(data.z5);
+                    $("#z5").slider('refresh');
+                    
+                    $("#loader").hide();
+                    status_ok();
+                    
+                }
+             });    
+        }
+            
+        function send_command(zone, val){
+
+            /*Function to send commands*/
+            
+            status_loading();
+            
+            $.ajax({
+                url: 'php/zonecontroller.php',
+                method: 'POST',
+                data: {'Zone': zone, 'Value': val},
+                dataType: 'json',
+                success: function (response) {
+                    if(response){
+                        status_ok();
+                    }  else {
+                        status_warning();
+                    }
+                }
+            });  
+        }
+        
+        function status_loading(){
+            $("#status").removeClass();
+            $("#status").addClass("loader");
+        
+        }
+        
+        function status_ok(){
+            $("#status").removeClass();
+            $("#status").addClass("blueCircle");
+        }
+        
+        function status_warning(){
+            $("#status").removeClass();
+            $("#status").addClass("redCircle");
+        }
+            
+        
+        $(document).ready(function(){
+
+            status_ok();
+            get_status();
+        
+            $("#z1").on( "slidestop", function( event, ui ) {
+                send_command($(this).attr('id'), $(this).val());
+            });
+            $("#z2").on( "slidestop", function( event, ui ) {
+                send_command($(this).attr('id'), $(this).val());
+            });
+            $("#z3").on( "slidestop", function( event, ui ) {
+                send_command($(this).attr('id'), $(this).val());
+            });
+            $("#z4").on( "slidestop", function( event, ui ) {
+                send_command($(this).attr('id'), $(this).val());
+            });
+            $("#z5").on( "slidestop", function( event, ui ) {
+               send_command($(this).attr('id'), $(this).val());
+            });
+        
+        });
+        
+    </script>
+
+
+    <div data-role="page">
+    
+ 
+        <div data-role="header">
+            <h1>Zone Controller</h1>
+        </div>
+ 
+        <div role="main" class="ui-content">  
+
+            <br><br>
+               
+            <div class="ui-grid-a">
+                <div class="ui-block-a" style="width:13%"><b><font size="5">Lounge</font></b></div>
+                <div class="ui-block-b" style="width:87%"><input type="range" name="z1" id="z1" value="0" min="0" max="2"  data-highlight="true"></div>
+            </div>
+            <br>
+            <div class="ui-grid-a">
+                <div class="ui-block-a" style="width:13%"><b><font size="5">Kitchen</font></b></div>
+                <div class="ui-block-b" style="width:87%"><input type="range" name="z2" id="z2" value="0" min="0" max="2"  data-highlight="true"></div>
+            </div>
+            <br>
+            <div class="ui-grid-a">
+                <div class="ui-block-a" style="width:13%"><b><font size="5">Master Bedroom</font></b></div>
+                <div class="ui-block-b" style="width:87%"><input type="range" name="z3" id="z3" value="0" min="0" max="2"  data-highlight="true"></div>
+            </div>
+            <br>
+            <div class="ui-grid-a">
+                <div class="ui-block-a" style="width:13%"><b><font size="5">Bedroom</font></b></div>
+                <div class="ui-block-b" style="width:87%"><input type="range" name="z4" id="z4" value="0" min="0" max="2"  data-highlight="true"></div>
+            </div>
+            <br>
+            <div class="ui-grid-a">
+                <div class="ui-block-a" style="width:13%"><b><font size="5">Office</font></b></div>
+                <div class="ui-block-b" style="width:87%"><input type="range" name="z5" id="z5" value="0" min="0" max="2"  data-highlight="true"></div>
+            </div>
+            <br>
+                        
+            <div id="status"></div>
+        
+         </div>
+ 
+    </div>
+</body>
+</html>
