@@ -1,8 +1,4 @@
-#!/usr/bin/env python
-
-"""
-Process config file
-"""
+#!/usr/bin/python
 
 import os
 

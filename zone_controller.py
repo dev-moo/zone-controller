@@ -283,7 +283,10 @@ def read_usb():
 
     if usbdata == 'ButtonPressed':
         dbg("Button has been pressed")
-        button_press_function.button_pressed()
+        try:
+            button_press_function.button_pressed()
+        except:
+            pass
 
 
         
@@ -405,11 +408,23 @@ try:
 
                             dbg("")
                             dbg("GET command received")
+                            
+                            
+                            
+                            if 'Type' in command and  command['Type'] == 'ZONES':
+                                print 'TYPE FOUND'
+                                print ZONE_NAMES
+                                print type(ZONE_NAMES)
+                                
+                                json_str = json.dumps(ZONE_NAMES)
+                                SOCK.sendto(json_str, address)
 
-                            #Get settings and encode to JSON
-                            json_str = json.dumps(get_settings())
+                            
+                            else:
 
-                            sent = SOCK.sendto(json_str, address)
+                                #Get settings and encode to JSON
+                                json_str = json.dumps(get_settings())
+                                sent = SOCK.sendto(json_str, address)
 
                             dbg('sent %s bytes back to %s' % (sent, address))
                             dbg("")
@@ -434,7 +449,7 @@ try:
                     read_usb()
                 except serial.SerialException:
                     logging.exception("Exception Occurred:")
-                    log_event("Serial Exception Occured")
+                    log_event("Serial Exception Occurred")
                     if USB in inputs: inputs.remove(USB)
                     USB = connect_arduino(ARDUINO_ADDRESS)
                     inputs.append(USB)
